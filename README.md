@@ -1,4 +1,6 @@
 imgurdl
 =======
 
-Download subreddit galleris /r/.. from imgur
+Download subreddit galleries /r/.. from imgur
+
+Very simple QML application that download subreddit galleries from imgur.
