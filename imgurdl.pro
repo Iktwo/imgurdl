@@ -11,7 +11,8 @@ RESOURCES += \
     resources.qrc
 
 OTHER_FILES += \
-    qml/main.qml
+    qml/main.qml \
+    qml/Checkbox.qml
 
 HEADERS += \
     src/hashcalculator.h \

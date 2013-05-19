@@ -18,10 +18,9 @@ DownloaderComponent::~DownloaderComponent()
     delete m_downloader;
 }
 
-
-void DownloaderComponent::download(const QString &url, int pages)
+void DownloaderComponent::download(const QString &url, const bool getNsfw, int pages)
 {
-    m_downloader->downloadSubreddit(url, pages);
+    m_downloader->downloadSubreddit(url, getNsfw, pages);
 }
 
 void DownloaderComponent::imageFound(const QString &hash, const QString &extension,
@@ -31,4 +30,11 @@ void DownloaderComponent::imageFound(const QString &hash, const QString &extensi
     /// TODO: store in model to display
 
     m_downloader->download(QString(Downloader::ImageUrl + hash + extension));
+//    m_files.append(QString(Downloader::ImageUrl + hash + extension));
+//    emit filesChanged();
+}
+
+QStringList DownloaderComponent::files()
+{
+    return m_files;
 }

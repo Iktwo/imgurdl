@@ -24,7 +24,7 @@ Downloader::~Downloader()
     delete m_netAccess;
 }
 
-void Downloader::downloadSubreddit(const QString &name, const int pages)
+void Downloader::downloadSubreddit(const QString &name, const bool getNsfw, const int pages)
 {
     // if pages == -1 download until there are two equal hashes
     // else iterate trough *pages*
@@ -33,6 +33,8 @@ void Downloader::downloadSubreddit(const QString &name, const int pages)
 
     if (pages != -1)
         for (int i = 0; i < pages; ++i) {
+            QString url(IMGUR_URL + name + "/page/" + QString::number(i) + ".xml");
+            m_getNsfw.insert(url, getNsfw);
             download(QString(IMGUR_URL + name + "/page/" + QString::number(i) + ".xml"));
         }
     else
@@ -56,7 +58,7 @@ void Downloader::downloadFinished(QNetworkReply *reply)
         return;
     }
 
-//    qDebug() << reply->url().toString() << " has been dowloaded";
+    //    qDebug() << reply->url().toString() << " has been dowloaded";
 
     QVariant redir = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
 
@@ -76,7 +78,7 @@ void Downloader::downloadFinished(QNetworkReply *reply)
     QString mimeType(reply->header(QNetworkRequest::ContentTypeHeader).toString());
 
     if (mimeType == "text/xml") {
-        parseXML(reply->readAll());
+        parseXML(reply->readAll(), reply->url().toString());
     } else if (mimeType.contains("image/")) {
         saveImageToDisk(reply->readAll(), reply->url().path().mid(1));
     } else
@@ -86,7 +88,7 @@ void Downloader::downloadFinished(QNetworkReply *reply)
     reply->deleteLater();
 }
 
-void Downloader::parseXML(const QByteArray &data)
+void Downloader::parseXML(const QByteArray &data, const QString &url)
 {
     QDomDocument xml;
     xml.setContent(data);
@@ -137,13 +139,18 @@ void Downloader::parseXML(const QByteArray &data)
 
             if (!hash.simplified().isEmpty()) {
                 m_subdirs.insert(QString(hash + extension), subreddit);
-                // qDebug() << "subdirs: " << m_subdirs.keys() << m_subdirs.count();
-                emit imageFound(hash, extension, author, title, date, nsfw);
+                if (!nsfw || (nsfw && m_getNsfw[url]))
+                    emit imageFound(hash, extension, author, title, date, nsfw);
+                else {
+                    qDebug() << "skipping NSFW content from: " << url;
+                }
             }
         }
 
         node = node.nextSibling();
     }
+
+    m_getNsfw.remove(url);
 }
 
 void Downloader::saveImageToDisk(const QByteArray &data, const QString &fileName)

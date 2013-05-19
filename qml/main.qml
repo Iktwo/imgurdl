@@ -10,12 +10,33 @@ Rectangle {
     }
 
     Text {
+        id: titleText
+
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
         }
 
         text: qsTr("imgur /r/Downloader by Iktwo")
+    }
+
+    Text {
+        id: nsfwText
+
+        anchors {
+            top: titleText.bottom; topMargin: 80
+        }
+
+        text: qsTr("Download NSFW content")
+    }
+
+    Checkbox {
+        id: checkbox
+
+        anchors {
+            left: nsfwText.right; leftMargin: 20
+            verticalCenter: nsfwText.verticalCenter
+        }
     }
 
     Rectangle {
@@ -49,11 +70,11 @@ Rectangle {
         height: 120
         width: 120
         radius: 20
-        color: "lightgray"
+        color: mouseArea.pressed ? "gray" : "lightgray"
 
         anchors {
-            bottom: parent.bottom; bottomMargin: 20
-            horizontalCenter: parent.horizontalCenter
+            left: input.right; leftMargin: 20
+            verticalCenter: input.verticalCenter
         }
 
         Text {
@@ -62,9 +83,40 @@ Rectangle {
         }
 
         MouseArea {
+            id: mouseArea
+
             anchors.fill: parent
 
-            onClicked: downloader.download(textInput.text, 1)
+            onClicked: downloader.download(textInput.text, false, 5)
         }
     }
+
+//    GridView {
+//        id: grid
+
+//        anchors.fill: parent
+
+//        model: downloader.files
+
+//        cellHeight: 210
+//        cellWidth: 210
+
+//        delegate: Item {
+
+//            height: grid.cellHeight
+//            width: grid.cellWidth
+
+//            Image {
+//                anchors.fill: parent
+
+//                fillMode: Image.PreserveAspectFit
+
+//                source: modelData
+
+//                clip: true
+
+//                onProgressChanged: console.log("Progress", progress)
+//            }
+//        }
+//    }
 }

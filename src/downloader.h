@@ -17,7 +17,7 @@ public:
     static QString ImageUrl;
 
 public slots:
-    void downloadSubreddit(const QString &name, const int pages = -1);
+    void downloadSubreddit(const QString &name, const bool getNsfw, const int pages = -1);
     void download(QString urlString);
     void downloadFinished(QNetworkReply *reply);
 
@@ -28,9 +28,10 @@ signals:
 private:
     QNetworkAccessManager *m_netAccess;
     QMap<QString, QString> m_subdirs;
+    QMap<QString, bool> m_getNsfw;
 
 private slots:
-    void parseXML(const QByteArray &data);
+    void parseXML(const QByteArray &data, const QString &url);
     void saveImageToDisk(const QByteArray &data, const QString &fileName);
 };
 
